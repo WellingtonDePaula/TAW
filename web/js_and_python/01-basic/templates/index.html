@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Mini Blog</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <script src="{{ url_for('static', filename='script.js') }}"></script>
+</head>
+<body>
+
+  <div class="container">
+    <h1>Mini Blog</h1>
+
+    <h2>Criar Post</h2>
+    <input type="text" id="titulo" placeholder="Título do seu post">
+    <textarea id="conteudo" placeholder="Escreva o conteúdo aqui..."></textarea>
+
+    <button onclick="criarPost()">Enviar</button>
+
+    <h2>Posts Recentes</h2>
+    <ul id="lista-posts"></ul>
+  </div>
+
+</body>
+</html>
