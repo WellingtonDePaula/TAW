@@ -1,0 +1,10 @@
+[tipo]([escopo]): [Verbo no infinitivo] [Breve resumo em português]
+
+[Explique o conceito de React / Next.js / JavaScript aplicado]
+
+# Exemplos de referência para o Copilot:
+# feat(trabalho): Criar componente de card usando React hooks
+# feat(exercicio): Implementar rota dinâmica para detalhes do produto no Next.js
+# fix(trabalho): Corrigir loop infinito no hook useEffect
+# style(exercicio): Adicionar responsividade na barra de navegação
+# refactor(trabalho): Converter componente para Next.js Server Component
