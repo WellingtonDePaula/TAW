@@ -1,14 +1,13 @@
 import Image from "next/image";
 import Link from "next/link";
 
-interface ClassCardProps {
+interface Props {
     name: string;
-    description: string;
     imageSrc: string;
     href: string;
 }
 
-export default function ClassCard({name, description, imageSrc, href}: ClassCardProps) {
+export default function ClassCard({name, imageSrc, href}: Props) {
     return (
         <Link href={href}>
             <div className="border border-gray-800 p-4 rounded-lg bg-gray-900
@@ -21,12 +20,9 @@ export default function ClassCard({name, description, imageSrc, href}: ClassCard
                         alt={`Armadura da Classe ${name}`}
                         width={150}
                         height={150}
-                        // fill
                         className="object-contain"
                     />
                 </div>
-
-                <h3 className="text-gray-400">{description}</h3>
             </div>
         </Link>
     );
