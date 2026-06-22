@@ -29,8 +29,12 @@ TAW/
 
 3. Inicie a aplicação:
    ```bash
-   npm start
+   npm run
    ```
+
+## Imagens dos projetos
+![imagem1](av3-imagem-1.png)
+![imagem2](av3-imagem-2.png)
 
 ## 👨‍💻 Autor
 
