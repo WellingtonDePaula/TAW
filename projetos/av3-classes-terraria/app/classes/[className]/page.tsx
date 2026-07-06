@@ -7,6 +7,7 @@ interface ClassData {
   image: string;
 }
 
+// 1. Seu objeto de dados locais (Mapeamento baseado em Terraria, excelente escolha!)
 const classes: Record<string, ClassData> = {
   mage: {
     name: "Mage",
@@ -29,6 +30,17 @@ const classes: Record<string, ClassData> = {
     image: "/solar-armor.png",
   }
 };
+
+// 2. Gerando os parâmetros estáticos a partir das chaves do objeto local (mage, ranger, etc.)
+export async function generateStaticParams() {
+  // Object.keys(classes) retorna ['mage', 'ranger', 'summoner', 'melee']
+  return Object.keys(classes).map((key) => ({
+    className: key,
+  }));
+}
+
+// 3. Trava o acesso apenas a essas 4 páginas. Qualquer outra rota gerará 404 automaticamente no build
+export const dynamicParams = false;
 
 export default async function Page({ params }: { params: Promise<{ className: string }> }) {
   const { className } = await params;
