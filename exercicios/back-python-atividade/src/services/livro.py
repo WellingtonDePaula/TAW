@@ -6,7 +6,7 @@ def criar_livro(data):
     livro = Livro(
         titulo=data['titulo'],
         autores=data['autores'],
-        editora=data['editora'],
+        editora=data.get('editora'),
         edicao=data['edicao'],
         ano_publicacao=data['ano_publicacao']
     )
