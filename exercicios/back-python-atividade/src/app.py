@@ -1,5 +1,6 @@
 from config import *
 from models.pessoa import Pessoa
+from routes.livro import *
 from routes.pessoa import *
 from routes.utils import *
 from routes.login import *

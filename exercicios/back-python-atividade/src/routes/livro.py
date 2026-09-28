@@ -5,8 +5,8 @@ import services.livro as livros_service
 @app.route('/livros', methods=['GET'])
 def retornar_livros():
 
-    # buscar as pessoas
-    livros = livros_service.retornar_pessoas()
+    # buscar os livros
+    livros = livros_service.retornar_livros()
     
     return jsonify({
         "resultado":"ok",
