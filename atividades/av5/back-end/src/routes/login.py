@@ -1,41 +1,24 @@
-from config import *
-import services.pessoa as pessoa_service
+from flask import Blueprint, jsonify, request
+
+from src.routes.utils import erro_api
+from src.services import pessoa as pessoa_service
+
+login_bp = Blueprint("login", __name__)
 
 
-
-'''
------
-LOGIN
------
-'''
-
-
-'''
-curl http://localhost:5000/login -X POST -H "Content-Type:application/json" -d '{"login":"admin", "senha":"admin123"}'
-{"detalhes":{"token":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJmcmVzaCI6ZmFsc2UsImlhdCI6MTc4NDU4NDIwNCwianRpIjoiNDE0NWNhOTUtYzA0NS00Mjk2LThjZjctNjUxNzliZTA5ZTMzIiwidHlwZSI6ImFjY2VzcyIsInN1YiI6IjEiLCJuYmYiOjE3ODQ1ODQyMDQsImNzcmYiOiJhMmMxNTU4Yy1lNjI0LTQ2OTYtOWRlZi0wZGY5YTg4Mjc0MzMiLCJleHAiOjE3ODQ1ODUxMDR9.C2ZOz5K7Dm90QCXsiGC7BslmHn-DGYsVYRUtmmaPWsI"},"resultado":"ok"}
-
-'''
-
-# rota para fornecer uma JWT
-@app.route('/login', methods=['POST'])
+@login_bp.post("/login")
 def login():
-    # ler os dados em json
-    dados = request.json
-    
-    # se faltou algum dado obrigatório...
-    if not dados or not dados.get('login') or not dados.get('senha'):
-        # retorna erro
-        return jsonify({"resultado":"erro", "detalhes":"Login e senha são obrigatórios"}), 400
-    
-    # chama o serviço de login
-    token = pessoa_service.gerar_token(dados['login'], dados['senha'])
-    
-    if token:
-        # retornar mensagem de sucesso :-)
-        return jsonify({
-            "resultado":"ok", 
-            "detalhes":{"token":token}
-        }), 200
-    else:
-        return jsonify({"resultado":"erro", 
-                        "detalhes":"Login ou senha inválidos"}), 401
+    dados = request.get_json(silent=True)
+    if not isinstance(dados, dict):
+        return erro_api("Envie um objeto JSON com login e senha.", 400)
+
+    login_enviado = dados.get("login")
+    senha_enviada = dados.get("senha")
+    if not isinstance(login_enviado, str) or not isinstance(senha_enviada, str):
+        return erro_api("Login e senha são obrigatórios.", 400)
+
+    pessoa, token = pessoa_service.gerar_token(login_enviado, senha_enviada)
+    if pessoa is None or token is None:
+        return erro_api("Login ou senha inválidos.", 401)
+
+    return jsonify({"dados": {"token": token, "pessoa": pessoa.to_dict(incluir_contato=True)}})

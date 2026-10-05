@@ -1,83 +1,156 @@
-# Como testar
+# API de pessoas e jogos
 
-Dentro dos arquivos das rotas existem demonstrações sobre como executar as rotas. Porém, seguem alguns testes:
+Backend Flask para cadastro de pessoas e jogos. Usa SQLAlchemy, PostgreSQL em produção ou SQLite local, e JWT para proteger operações de escrita.
 
-## Teste de operação do backend
+## Configuração e execução
 
-```curl localhost:5000```
-
-## Listagem de dados
-
-<a href="https://gitlab.com/hvescovi/progs/-/blob/main/web/react_with_next/06-complete-app/back-python/src/routes/pessoa.py?ref_type=heads#L15">link</a>
-
-OU
-
-```curl localhost:5000/pessoas```
-
-## Login
-
-<a href="https://gitlab.com/hvescovi/progs/-/blob/main/web/react_with_next/06-complete-app/back-python/src/routes/login.py?ref_type=heads#L14">link</a>
-
-OU
-
-```curl http://localhost:5000/login -X POST -H "Content-Type:application/json" -d '{"login":"admin", "senha":"admin123"}'```
-
-NO WINDOWS, use o prompt de comando (NÃO use o PowerShell), e execute desta maneira (note que não usaremos aspas simples e vamos inserir uma contrabarra antes das aspas duplas internas):
-
-```curl.exe -v -X POST "http://localhost:5000/login" -H "Content-Type: application/json" --data "{\"login\":\"admin\",\"senha\":\"admin123\"}"```
-
-## Incluir uma pessoa
-
-<a href="https://gitlab.com/hvescovi/progs/-/blob/main/web/react_with_next/06-complete-app/back-python/src/routes/pessoa.py?ref_type=heads#L61">link</a>
-
-OU
-
-```curl http://localhost:5000/pessoa -X POST -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJmcmVzaCI6ZmFsc2UsImlhdCI6MTc4NDU4NDIwNCwianRpIjoiNDE0NWNhOTUtYzA0NS00Mjk2LThjZjctNjUxNzliZTA5ZTMzIiwidHlwZSI6ImFjY2VzcyIsInN1YiI6IjEiLCJuYmYiOjE3ODQ1ODQyMDQsImNzcmYiOiJhMmMxNTU4Yy1lNjI0LTQ2OTYtOWRlZi0wZGY5YTg4Mjc0MzMiLCJleHAiOjE3ODQ1ODUxMDR9.C2ZOz5K7Dm90QCXsiGC7BslmHn-DGYsVYRUtmmaPWsI" -H "Content-Type:application/json" -d '{"nome":"Tiago Matos", "email":"tima@gmail.com","telefone":"47 9 8899 7766", "login":"tima","senha":"tima123"}'```
-
-NO WINDOWS, acrescente ".exe" após o "curl", substitua as aspas simples por aspas duplas e insira contrabarra antes das aspas duplas internas. Por exemplo:
-
-```curl.exe http://localhost:5000/pessoa -X POST -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJmcmVzaCI6ZmFsc2UsImlhdCI6MTc4NTYxOTAzMCwianRpIjoiMGJiZTgyNjEtMjliNC00NWRjLWI4OGMtNmJhNzc3OTJjYzRmIiwidHlwZSI6ImFjY2VzcyIsInN1YiI6IjEiLCJuYmYiOjE3ODU2MTkwMzAsImNzcmYiOiI3ZWRhYjgyYy1kM2JmLTQ5MjctYjcxMC02MjBmOTAzMzZhOWUiLCJleHAiOjE3ODU2MTk5MzB9.EmONHkGIfETj-ysOecWvrNrdT6lNlN9xhy-FyMUKHRM" -H "Content-Type:application/json" -d "{\"nome\":\"Sara Jango\", \"email\":\"saja@gmail.com\",\"telefone\":\"47 9 1155 4376\", \"login\":\"saja\",\"senha\":\"saja123\"}"```
-
-Observação: note que a *token* é gerada após o sucesso da execução do login. No exemplo de incluir pessoa, portanto, o valor de token usado no curl deve ser *substituído* pelo valor que for retornado na execução da rota *login*.
-
-## Erro de Permissão no Windows 
-
-Se ocorrer algum problema de permissão do Windows ao executar o curl.exe usando POST, tente este comando alternativo:
+No diretório `back-end`, instale as dependências e configure as variáveis de ambiente:
 
 ```powershell
-$headers = @{
-    Authorization = "Bearer <TOKEN>"
-    "Content-Type" = "application/json"
-}
-
-$body = @{
-    nome      = "Sara Jango"
-    email     = "saja@gmail.com"
-    telefone  = "47 9 1155 4376"
-    login     = "saja"
-    senha     = "saja123"
-} | ConvertTo-Json
-
-Invoke-RestMethod `
-    -Uri "http://localhost:5000/pessoa" `
-    -Method Post `
-    -Headers $headers `
-    -Body $body
-```
-
-# Como instalar as bibliotecas necessárias
-
-É preciso pelo menos uma vez instalar as bibliotecas necessárias para executar o backend. 
-Use este comando:
-
-```
 uv sync
+$env:JWT_SECRET_KEY = "defina-uma-chave-secreta-longa"
+uv run flask --app src.app db upgrade
+uv run flask --app src.app run
 ```
 
-# Como executar
+Sem `DATABASE_URL` ou `POSTGRES_URL_NON_POOLING`, o banco SQLite é criado em `src/database/jogos.db`. Em produção, configure `DATABASE_URL`, `JWT_SECRET_KEY` e `CORS_ORIGINS`; não use o servidor de desenvolvimento do Flask em produção. A chave JWT deve permanecer estável entre reinicializações. `CORS_ORIGINS` aceita origens separadas por vírgula.
 
-Para executar o backend, use este comando:
+## Dados de teste
 
+Depois de aplicar as migrações, carregue os dados de demonstração com:
+
+```powershell
+uv run flask --app src.app seed-dados-teste
 ```
-uv run flask --app src/app run
+
+O comando pode ser executado novamente sem duplicar gêneros ou jogos. Ele cadastra três jogos e os gêneros relacionados, além de criar ou redefinir a conta local de teste:
+
+| Campo | Valor |
+| --- | --- |
+| Nome | `Usuario de Teste` |
+| Login | `teste` |
+| Senha | `teste1234` |
+
+Use essa conta apenas em desenvolvimento/testes. Não execute a carga de teste em produção; a senha é conhecida e o comando redefine a senha dessa conta sempre que executado.
+
+## Testar rotas no Bash
+
+Os exemplos abaixo precisam de `curl` e `jq`. Inicie a API e carregue os dados de teste antes de executá-los. Use uma conta de desenvolvimento; não envie credenciais de teste a um servidor de produção.
+
+Defina a URL da API e obtenha um token com a conta criada pelo seed:
+
+```bash
+BASE_URL="http://127.0.0.1:5000"
+TOKEN=$(curl -fsS -X POST "$BASE_URL/login" \
+  -H "Content-Type: application/json" \
+  -d '{"login":"teste","senha":"teste1234"}' | jq -r '.dados.token')
 ```
+
+Verifique a API e faça consultas públicas/autenticadas:
+
+```bash
+curl -i "$BASE_URL/"
+curl -i "$BASE_URL/generos"
+curl -i "$BASE_URL/jogos"
+curl -i "$BASE_URL/pessoas" -H "Authorization: Bearer $TOKEN"
+```
+
+Cadastre uma pessoa (o sufixo evita conflito ao repetir o exemplo) e um gênero:
+
+```bash
+SUFIXO=$(date +%s)
+curl -i -X POST "$BASE_URL/pessoas" \
+  -H "Content-Type: application/json" \
+  -d "{\"nome\":\"Pessoa Bash\",\"email\":\"bash-${SUFIXO}@example.com\",\"login\":\"bash-${SUFIXO}\",\"senha\":\"senha1234\"}"
+
+GENERO_ID=$(curl -fsS -X POST "$BASE_URL/generos" \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d "{\"nome\":\"Teste-${SUFIXO}\"}" | jq -r '.dados.id')
+curl -i "$BASE_URL/generos"
+```
+
+Crie um jogo, consulte, atualize por `PUT` ou `PATCH` e exclua-o:
+
+```bash
+JOGO_ID=$(curl -fsS -X POST "$BASE_URL/jogos" \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d "{\"nome\":\"Jogo Bash ${SUFIXO}\",\"descricao\":\"Cadastro de teste pela API.\",\"banner\":\"https://placehold.co/1200x500?text=Jogo+Bash\",\"preco_base\":\"59.90\",\"preco_ofertado\":\"39.90\",\"generos\":[${GENERO_ID}],\"distribuidora\":\"Distribuidora de Teste\",\"desenvolvedora\":\"Estudio de Teste\"}" | jq -r '.dados.id')
+
+curl -i "$BASE_URL/jogos/$JOGO_ID"
+curl -i -X PUT "$BASE_URL/jogos/$JOGO_ID" \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d "{\"nome\":\"Jogo Bash ${SUFIXO}\",\"descricao\":\"Cadastro substituido via PUT.\",\"banner\":\"https://placehold.co/1200x500?text=Jogo+Bash\",\"preco_base\":\"59.90\",\"preco_ofertado\":\"39.90\",\"generos\":[${GENERO_ID}],\"distribuidora\":\"Distribuidora de Teste\",\"desenvolvedora\":\"Estudio de Teste\"}"
+curl -i -X PATCH "$BASE_URL/jogos/$JOGO_ID" \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"preco_ofertado":"29.90"}'
+curl -i -X DELETE "$BASE_URL/jogos/$JOGO_ID" \
+  -H "Authorization: Bearer $TOKEN"
+```
+
+Para testar erros de validação, envie uma oferta igual ao preço base; a API deve responder `400`:
+
+```bash
+curl -i -X POST "$BASE_URL/jogos" \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d "{\"nome\":\"Jogo Invalido ${SUFIXO}\",\"descricao\":\"Teste de validacao.\",\"banner\":\"https://placehold.co/1200x500\",\"preco_base\":\"20.00\",\"preco_ofertado\":\"20.00\",\"generos\":[${GENERO_ID}],\"distribuidora\":\"Distribuidora\",\"desenvolvedora\":\"Estudio\"}"
+```
+
+## Contrato HTTP
+
+Respostas de sucesso usam `dados`; erros usam `erro.mensagem` e, quando pertinente, `erro.campos`. Os preços são strings decimais com duas casas. `generos` é uma lista de objetos `{ "id", "nome" }` na resposta e uma lista de IDs na escrita.
+
+| Método e rota | Acesso | Descrição |
+| --- | --- | --- |
+| `POST /pessoas` | Público | Cadastra pessoa com nome, e-mail, login, senha e telefone opcional. |
+| `GET /pessoas` | JWT | Lista identificador, nome e login, sem expor dados de contato ou senha. |
+| `POST /login` | Público | Autentica uma pessoa cadastrada e retorna um JWT. |
+| `GET /jogos` | Público | Lista jogos. |
+| `GET /jogos/<id>` | Público | Consulta um jogo. |
+| `POST /jogos` | JWT | Cadastra um jogo. |
+| `PUT /jogos/<id>` | JWT | Substitui os dados do jogo. |
+| `PATCH /jogos/<id>` | JWT | Atualiza parcialmente o jogo. |
+| `DELETE /jogos/<id>` | JWT | Exclui um jogo. |
+| `GET /generos` | Público | Lista gêneros disponíveis. |
+| `POST /generos` | JWT | Cadastra um gênero. |
+
+Senhas devem ter ao menos 8 bytes e são armazenadas como hash bcrypt. E-mail e login são únicos; o login é normalizado para minúsculas. Nunca retorne o hash em respostas.
+
+Exemplo de cadastro de pessoa:
+
+```json
+{
+  "nome": "Pessoa Exemplo",
+  "email": "pessoa@example.com",
+  "login": "pessoa",
+  "senha": "uma-senha-forte",
+  "telefone": "(00) 00000-0000"
+}
+```
+
+Exemplo de criação de gênero:
+
+```json
+{ "nome": "Aventura" }
+```
+
+Exemplo de jogo (use IDs existentes em `generos`):
+
+```json
+{
+  "nome": "Jogo Exemplo",
+  "descricao": "Descrição do jogo.",
+  "banner": "https://example.com/banner.jpg",
+  "preco_base": "99.90",
+  "preco_ofertado": "79.90",
+  "generos": [1],
+  "distribuidora": "Distribuidora Exemplo",
+  "desenvolvedora": "Estúdio Exemplo"
+}
+```
+
+Cadastre uma conta em `/pessoas`, autentique em `/login` com `login` e `senha`, e envie `Authorization: Bearer <TOKEN>` nas operações protegidas. Execute os testes com `uv run python -m unittest discover -s tests`.
