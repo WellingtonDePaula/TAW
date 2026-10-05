@@ -1,6 +1,0 @@
-app
-config
-database
-models
-routes
-services
