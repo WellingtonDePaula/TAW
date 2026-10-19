@@ -7,8 +7,16 @@ src/back_python.egg-info/SOURCES.txt
 src/back_python.egg-info/dependency_links.txt
 src/back_python.egg-info/requires.txt
 src/back_python.egg-info/top_level.txt
+src/models/genero.py
+src/models/jogo.py
 src/models/pessoa.py
+src/routes/genero.py
+src/routes/jogo.py
 src/routes/login.py
 src/routes/pessoa.py
 src/routes/utils.py
+src/services/errors.py
+src/services/genero.py
+src/services/jogo.py
 src/services/pessoa.py
+src/services/seed.py

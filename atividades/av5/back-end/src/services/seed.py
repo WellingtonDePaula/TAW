@@ -13,7 +13,13 @@ TEST_USER = {
     "senha": "teste1234",
     "telefone": "0000000000",
 }
-
+ADMIN_USER = {
+    "nome": "Administrador",
+    "email": "admin@example.com",
+    "login": "admin",
+    "senha": "admin123",
+    "telefone": "0000000000",
+}
 SEED_GAMES = [
     {
         "nome": "Starlight Courier",
@@ -81,22 +87,23 @@ def popular_dados_teste():
         db.session.add(jogo)
         jogos_criados += 1
 
-    pessoa = Pessoa.query.filter(func.lower(Pessoa.login) == TEST_USER["login"]).first()
-    if pessoa is None:
-        pessoa = Pessoa(
-            nome=TEST_USER["nome"],
-            email=TEST_USER["email"],
-            telefone=TEST_USER["telefone"],
-            login=TEST_USER["login"],
-            senha_hash="",
-        )
-        db.session.add(pessoa)
-    pessoa.nome = TEST_USER["nome"]
-    pessoa.email = TEST_USER["email"]
-    pessoa.telefone = TEST_USER["telefone"]
-    pessoa.senha_hash = bcrypt.hashpw(
-        TEST_USER["senha"].encode("utf-8"), bcrypt.gensalt()
-    ).decode("utf-8")
+    for usuario in (TEST_USER, ADMIN_USER):
+        pessoa = Pessoa.query.filter(func.lower(Pessoa.login) == usuario["login"]).first()
+        if pessoa is None:
+            pessoa = Pessoa(
+                nome=usuario["nome"],
+                email=usuario["email"],
+                telefone=usuario["telefone"],
+                login=usuario["login"],
+                senha_hash="",
+            )
+            db.session.add(pessoa)
+        pessoa.nome = usuario["nome"]
+        pessoa.email = usuario["email"]
+        pessoa.telefone = usuario["telefone"]
+        pessoa.senha_hash = bcrypt.hashpw(
+            usuario["senha"].encode("utf-8"), bcrypt.gensalt()
+        ).decode("utf-8")
 
     db.session.commit()
     return {
